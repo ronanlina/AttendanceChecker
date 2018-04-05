@@ -13,27 +13,21 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-/**
- * Created by Ronan Lina on 11/03/2018.
- */
 
-/*
-*
-*
-* IDISPLAY ANG MGASUBJECTS SA LISTVIEW
-*
-* */
 public class subjSchedAdapter extends BaseAdapter{
 
     private Activity mActivity;
     private DatabaseReference mDatabaseReference;
     private String mTeacherId;
     private ArrayList<DataSnapshot> mSnapshotList;
+    private Query query;
 
     // child event listener
 
@@ -67,6 +61,7 @@ public class subjSchedAdapter extends BaseAdapter{
         }
     };
 
+
     //constructor
 
     public subjSchedAdapter(Activity activity, DatabaseReference ref, String subjteacherid){
@@ -74,7 +69,10 @@ public class subjSchedAdapter extends BaseAdapter{
         mActivity = activity;
         mTeacherId = subjteacherid;
         mDatabaseReference = ref.child("subjects");
-        mDatabaseReference.addChildEventListener(mListener);
+
+        query = mDatabaseReference.orderByChild("teacherid").equalTo(subjteacherid);
+
+        query.addChildEventListener(mListener);
 
         mSnapshotList = new ArrayList<>();
     }
@@ -85,7 +83,7 @@ public class subjSchedAdapter extends BaseAdapter{
         TextView subjectCodeAndName;
         TextView time;
         TextView sectionName;
-        TextView teacherid;
+        TextView teacherId;
         LinearLayout.LayoutParams params;
     }
 
@@ -118,7 +116,7 @@ public class subjSchedAdapter extends BaseAdapter{
             holder.subjectCodeAndName = (TextView) convertView.findViewById(R.id.subjectCodeAndName);
             holder.time = (TextView) convertView.findViewById(R.id.time);
             holder.sectionName = (TextView) convertView.findViewById(R.id.sectionName);
-            holder.teacherid = (TextView) convertView.findViewById(R.id.teacherid);
+            holder.teacherId = (TextView) convertView.findViewById(R.id.teacherid);
             holder.params = (LinearLayout.LayoutParams) holder.subjectCodeAndName.getLayoutParams();
             convertView.setTag(holder);
         }
@@ -134,7 +132,7 @@ public class subjSchedAdapter extends BaseAdapter{
         holder.subjectCodeAndName.setText(subjcodeandname);
         holder.time.setText(time);
         holder.sectionName.setText(sectionName);
-        holder.teacherid.setText(teacherId);
+        holder.teacherId.setText(teacherId);
 
         return convertView;
     }
@@ -142,5 +140,6 @@ public class subjSchedAdapter extends BaseAdapter{
     public void cleanup(){
 
         mDatabaseReference.removeEventListener(mListener);
+
     }
 }

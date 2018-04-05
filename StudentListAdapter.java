@@ -2,8 +2,6 @@ package com.example.ronanlina.attendancechecker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,69 +9,61 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Map;
-
-import static android.content.ContentValues.TAG;
 
 public class StudentListAdapter extends BaseAdapter{
 
     private Activity mActivity;
-    private CollectionReference mCollectionReference;
-    private FirebaseFirestore db;
+    private DatabaseReference mDatabaseReference;
+    private ArrayList<DataSnapshot> mSnapshotList;
     private String mSection;
-    private ArrayList<StudentList> mSnapshotList;
-    private Query query;
-    private StudentList mStudentList;
-    private DocumentReference docRef;
+    private com.google.firebase.database.Query query;
 
-    public StudentListAdapter(Activity activity, String section){
+    private ChildEventListener mListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            mSnapshotList.add(dataSnapshot);
+            notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+
+    public StudentListAdapter(Activity activity, DatabaseReference ref, String section){
 
         mActivity = activity;
         mSection = section;
-        mCollectionReference = db.getInstance().collection("studentsmobile");
-        //mCollectionReference.add
-        //mDatabaseReference.addChildEventListener(mListener);
-        mStudentList = new StudentList();
-        mSnapshotList = new ArrayList<>();
+        mDatabaseReference = ref.child("studentlist");
 
-        query = mCollectionReference.whereEqualTo("Section",mSection);
+        query = mDatabaseReference.orderByChild("section").equalTo(mSection);
 
-        queryShit(query);
-
-
-    }
-
-    public void queryShit(Query query)
-    {
-        query.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                mStudentList = (StudentList) document.getData();
-                                mSnapshotList.add(mStudentList);
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+        query.addChildEventListener(mListener);
 
     }
 
@@ -89,8 +79,8 @@ public class StudentListAdapter extends BaseAdapter{
 
     @Override
     public StudentList getItem(int position) {
-
-        return mSnapshotList.get(position);
+        DataSnapshot snapshot = mSnapshotList.get(position);
+        return snapshot.getValue(StudentList.class);
     }
 
     @Override
@@ -122,4 +112,9 @@ public class StudentListAdapter extends BaseAdapter{
 
     }
 
+    public void cleanup(){
+
+        mDatabaseReference.removeEventListener(mListener);
+
+    }
 }
