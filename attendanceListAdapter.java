@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class attendanceListAdapter extends BaseAdapter {
     private String mSectionId;
     private String mSubjectId;
     private ArrayList<DataSnapshot> mSnapshotList;
+    private Query query;
 
     // child event listener
 
@@ -48,7 +50,9 @@ public class attendanceListAdapter extends BaseAdapter {
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+            mSnapshotList.add(dataSnapshot);
+            notifyDataSetChanged();
+            Log.d("SUPOTLOWERLL", "here");
         }
 
         @Override
@@ -69,12 +73,14 @@ public class attendanceListAdapter extends BaseAdapter {
 
     //constructor
 
-    public attendanceListAdapter(Activity activity, DatabaseReference ref, String subjsecid, String subjid){
+    public attendanceListAdapter(Activity activity, DatabaseReference ref, String section){
 
         mActivity = activity;
-        mSectionId = subjsecid;
-        mSubjectId = subjid;
+
         mDatabaseReference = ref.child("studentlist");
+
+        //query = mDatabaseReference.orderByChild("section").equalTo("A");
+
         mDatabaseReference.addChildEventListener(mListener);
 
         mSnapshotList = new ArrayList<>();
@@ -161,9 +167,11 @@ public class attendanceListAdapter extends BaseAdapter {
 
                 if(holder.checkLate.isChecked()){
                     attendanceType = "Late";
+                    holder.checkExcuse.setEnabled(false);
                 }
                 else {
                     attendanceType = "Present";
+                    holder.checkExcuse.setEnabled(true);
                 }
 
                 Attendance attendance = new Attendance(subjid, studentid, studName, section, date, attendanceType);
@@ -190,9 +198,11 @@ public class attendanceListAdapter extends BaseAdapter {
 
                 if(holder.checkExcuse.isChecked()){
                     attendanceType = "Excused";
+                    holder.checkLate.setEnabled(false);
                 }
                 else {
                     attendanceType = "Absent";
+                    holder.checkLate.setEnabled(true);
                 }
 
                 Attendance attendance = new Attendance(subjid, studentid, studName, section, date, attendanceType);

@@ -2,34 +2,17 @@ package com.example.ronanlina.attendancechecker;
 
 public class StudentList {
 
-    String StudentId;
-    String Name;
-    String Section;
-    String YearLevel;
+    String studentId;
+    String name;
+    String section;
+    String yearlevel;
 
-    public StudentList(String studentId, String name, String section, String yearLevel) {
-        StudentId = studentId;
-        Name = name;
-        Section = section;
-        YearLevel = yearLevel;
+    public StudentList(String studentId, String name, String section, String yearlevel) {
+        this.studentId = studentId;
+        this.name = name;
+        this.section = section;
+        this.yearlevel = yearlevel;
     }
 
-    public StudentList() {
-    }
 
-    public String getStudentId() {
-        return StudentId;
-    }
-
-    public String getName() {
-        return Name;
-    }
-
-    public String getSection() {
-        return Section;
-    }
-
-    public String getYearLevel() {
-        return YearLevel;
-    }
 }

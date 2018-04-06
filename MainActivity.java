@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     saveEmailAndPassword();
                     Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                    intent.putExtra("email",mEmail.getText().toString());
                     finish();
                     startActivity(intent);
                 }
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
     private void showErrorDialog(String message) {
         new AlertDialog.Builder(this)

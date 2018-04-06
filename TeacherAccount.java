@@ -20,4 +20,12 @@ public class TeacherAccount {
     public String getTeacherId() {
         return TeacherId;
     }
+
+    public void setEmail(String email) {
+        Email = email;
+    }
+
+    public void setTeacherId(String teacherId) {
+        TeacherId = teacherId;
+    }
 }

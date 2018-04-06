@@ -2,6 +2,7 @@ package com.example.ronanlina.attendancechecker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class subjSchedAdapter extends BaseAdapter{
     private String mTeacherId;
     private ArrayList<DataSnapshot> mSnapshotList;
     private Query query;
-
+    private Context mContext;
     // child event listener
 
     private ChildEventListener mListener = new ChildEventListener() {
@@ -37,12 +38,15 @@ public class subjSchedAdapter extends BaseAdapter{
 
             mSnapshotList.add(dataSnapshot);
             notifyDataSetChanged();
+            Log.d("SUPOT%$#@!", "here");
 
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+            mSnapshotList.add(dataSnapshot);
+            notifyDataSetChanged();
+            Log.d("SUPOT%$#@!", "here");
         }
 
         @Override
@@ -64,17 +68,18 @@ public class subjSchedAdapter extends BaseAdapter{
 
     //constructor
 
-    public subjSchedAdapter(Activity activity, DatabaseReference ref, String subjteacherid){
+    public subjSchedAdapter(Activity activity, DatabaseReference ref, String id){
 
         mActivity = activity;
-        mTeacherId = subjteacherid;
+
         mDatabaseReference = ref.child("subjects");
 
-        query = mDatabaseReference.orderByChild("teacherid").equalTo(subjteacherid);
+        query = mDatabaseReference.orderByChild("teacherid").equalTo(id);
 
         query.addChildEventListener(mListener);
 
         mSnapshotList = new ArrayList<>();
+
     }
 
     //view holder
@@ -124,10 +129,10 @@ public class subjSchedAdapter extends BaseAdapter{
         final SubjectScheds subjectsched = getItem(position);
         final ViewHolder holder = (ViewHolder) convertView.getTag();
 
-        String subjcodeandname = subjectsched.getSubjectCode() + " - " + subjectsched.getSubjectName();
-        String time = "time : " + subjectsched.getTime();
-        String sectionName = "section : " + subjectsched.getSectionname();
-        String teacherId = "teacher : " + subjectsched.getTeacherid();
+        String subjcodeandname = "   " + subjectsched.getSubjectCode() + " - " + subjectsched.getSubjectName();
+        String time = "   time : " + subjectsched.getTime();
+        String sectionName = "   section : " + subjectsched.getSectionname();
+        String teacherId = "   teacher : " + subjectsched.getTeacherid();
 
         holder.subjectCodeAndName.setText(subjcodeandname);
         holder.time.setText(time);

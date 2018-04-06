@@ -13,6 +13,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class StudentListAdapter extends BaseAdapter{
     private DatabaseReference mDatabaseReference;
     private ArrayList<DataSnapshot> mSnapshotList;
     private String mSection;
-    private com.google.firebase.database.Query query;
+    private Query query;
 
     private ChildEventListener mListener = new ChildEventListener() {
         @Override
@@ -35,6 +36,9 @@ public class StudentListAdapter extends BaseAdapter{
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            mSnapshotList.add(dataSnapshot);
+            notifyDataSetChanged();
 
         }
 
@@ -61,9 +65,11 @@ public class StudentListAdapter extends BaseAdapter{
         mSection = section;
         mDatabaseReference = ref.child("studentlist");
 
-        query = mDatabaseReference.orderByChild("section").equalTo(mSection);
+        query = mDatabaseReference.orderByChild("section").equalTo(section);
 
         query.addChildEventListener(mListener);
+
+        mSnapshotList = new ArrayList<>();
 
     }
 
@@ -78,9 +84,10 @@ public class StudentListAdapter extends BaseAdapter{
     }
 
     @Override
-    public StudentList getItem(int position) {
+    public AttendanceList getItem(int position) {
         DataSnapshot snapshot = mSnapshotList.get(position);
-        return snapshot.getValue(StudentList.class);
+
+        return snapshot.getValue(AttendanceList.class);
     }
 
     @Override
@@ -101,7 +108,7 @@ public class StudentListAdapter extends BaseAdapter{
             convertView.setTag(holder);
         }
 
-        final StudentList studentlist = getItem(position);
+        final AttendanceList studentlist = getItem(position);
         final StudentListAdapter.ViewHolder holder = (StudentListAdapter.ViewHolder) convertView.getTag();
 
         String studname = studentlist.getName();

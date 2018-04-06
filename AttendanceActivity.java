@@ -2,6 +2,7 @@ package com.example.ronanlina.attendancechecker;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
@@ -13,12 +14,18 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +38,15 @@ public class AttendanceActivity extends AppCompatActivity {
     private attendanceListAdapter mAdapter;
     private DatabaseReference mDatabaseReference;
 
+    private String email;
+    private ArrayList<DataSnapshot> mSnapshots;
+    private String id;
+    private TeacherAccount ta;
+    private String[] spinItem;
+    private SubjectScheds ss;
+    private Spinner spin;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +57,42 @@ public class AttendanceActivity extends AppCompatActivity {
 
         mAttendanceListView = (ListView) findViewById(R.id.attendanceListView);
         Button saveButton = (Button) findViewById(R.id.saveAttendanceButton);
+
+        spin = (Spinner)findViewById(R.id.sectionSpinner2);
+        final int spinner_pos = spin.getSelectedItemPosition();
+        final String[] sects = getResources().getStringArray(R.array.sections);
+
+
+
+        Intent intent = getIntent();
+        email = intent.getStringExtra("email");
+        mSnapshots = new ArrayList<>();
+
+        /*Query query = mDatabaseReference.orderByChild("Email")
+                .equalTo(email)
+                .limitToFirst(1);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot finalSnap :dataSnapshot.getChildren()){
+
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("studentlist");
+                    ta = finalSnap.getValue(TeacherAccount.class);
+                    id = ta.getTeacherId(); //the part where it says it returns null
+                    mAdapter = new attendanceListAdapter(AttendanceActivity.this,db,sects[spinner_pos]);
+                    mAttendanceListView.setAdapter(mAdapter);
+                    Log.d("SUPOT69",id);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });*/
+
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,14 +139,10 @@ public class AttendanceActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
 
-        mAdapter = new attendanceListAdapter(this, mDatabaseReference,"sample-07","11092001");
 
+        mAdapter = new attendanceListAdapter(this,mDatabaseReference,"A");
         mAttendanceListView.setAdapter(mAdapter);
 
-        final attendanceListAdapter.ViewHolder holder = new attendanceListAdapter.ViewHolder();
-
-        holder.presentButton = (Button) findViewById(R.id.presentButton);
-        holder.absentButton = (Button) findViewById(R.id.absentButton);
 
     }
 
@@ -102,7 +150,7 @@ public class AttendanceActivity extends AppCompatActivity {
     public void onStop(){
         super.onStop();
 
-        mAdapter.cleanup();
+
     }
 
 }
