@@ -37,7 +37,6 @@ public class activity_student_list extends AppCompatActivity {
         Intent intent = getIntent();
         mSectionTitle = intent.getStringExtra("section");
         section.setText(mSectionTitle);
-        String studSection = mSectionTitle;
 
         mAdapter = new StudentListAdapter(this, mDatabaseReference, mSectionTitle);
         studentList.setAdapter(mAdapter);
@@ -61,9 +60,6 @@ public class activity_student_list extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-
-
-        //studentList.setAdapter(mAdapter);
 
     }
 

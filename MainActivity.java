@@ -96,12 +96,10 @@ public class MainActivity extends AppCompatActivity {
         if (email.equals("") || password.equals("")) return;
         Toast.makeText(this,"Login in progress...", Toast.LENGTH_SHORT).show();
 
-
         // TODO: Use FirebaseAuth to sign in with email & password
         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-
 
                 if(!task.isSuccessful()){
                     showErrorDialog("There was a problem signing in.");
@@ -113,10 +111,8 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     startActivity(intent);
                 }
-
             }
         });
-
 
     }
 

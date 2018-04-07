@@ -111,7 +111,7 @@ public class StudentListAdapter extends BaseAdapter{
         final AttendanceList studentlist = getItem(position);
         final StudentListAdapter.ViewHolder holder = (StudentListAdapter.ViewHolder) convertView.getTag();
 
-        String studname = studentlist.getName();
+        String studname = "   "+studentlist.getName();
 
         holder.studentName.setText(studname);
 

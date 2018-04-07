@@ -38,9 +38,6 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(MainActivity.ATTENDANCE_PREFS, MODE_PRIVATE);
         mEmail = prefs.getString(MainActivity.EMAIL_KEY,null);
 
-        String tID = GetID();
-        prefs.edit().putString(TEACHER_PREFS,tID).apply();
-
         scheduleViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,64 +56,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
-
-    }
-
-    public String GetID()
-    {
-        //Retrieving the Teacher Id with the current Logged in email
-
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        db.child("teacheraccount");
-        final String tID;
-
-        Query query = db.orderByChild("Email").equalTo(mEmail);
-
-        /*query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ta = dataSnapshot.getValue(TeacherAccount.class);
-                mTeacherId = ta.getTeacherId();
-                Log.d("teacherID2",mTeacherId);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });*/
-        query.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ta = dataSnapshot.getValue(TeacherAccount.class);
-                mTeacherId = ta.getTeacherId().toString();
-                Log.d("teacherID",mTeacherId);
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        return mTeacherId;
     }
 
     @Override

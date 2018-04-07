@@ -38,15 +38,12 @@ public class subjSchedAdapter extends BaseAdapter{
 
             mSnapshotList.add(dataSnapshot);
             notifyDataSetChanged();
-            Log.d("SUPOT%$#@!", "here");
-
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             mSnapshotList.add(dataSnapshot);
             notifyDataSetChanged();
-            Log.d("SUPOT%$#@!", "here");
         }
 
         @Override

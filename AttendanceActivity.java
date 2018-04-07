@@ -44,7 +44,9 @@ public class AttendanceActivity extends AppCompatActivity {
     private TeacherAccount ta;
     private String[] spinItem;
     private SubjectScheds ss;
-    private Spinner spin;
+
+    public Button saveButton;
+    public Context mContext;
 
 
     @Override
@@ -58,17 +60,11 @@ public class AttendanceActivity extends AppCompatActivity {
         mAttendanceListView = (ListView) findViewById(R.id.attendanceListView);
         Button saveButton = (Button) findViewById(R.id.saveAttendanceButton);
 
-        spin = (Spinner)findViewById(R.id.sectionSpinner2);
-        final int spinner_pos = spin.getSelectedItemPosition();
-        final String[] sects = getResources().getStringArray(R.array.sections);
-
-
-
         Intent intent = getIntent();
         email = intent.getStringExtra("email");
         mSnapshots = new ArrayList<>();
 
-        /*Query query = mDatabaseReference.orderByChild("Email")
+        Query query = mDatabaseReference.orderByChild("Email")
                 .equalTo(email)
                 .limitToFirst(1);
 
@@ -77,12 +73,9 @@ public class AttendanceActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot finalSnap :dataSnapshot.getChildren()){
 
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("studentlist");
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("teacheraccounts");
                     ta = finalSnap.getValue(TeacherAccount.class);
                     id = ta.getTeacherId(); //the part where it says it returns null
-                    mAdapter = new attendanceListAdapter(AttendanceActivity.this,db,sects[spinner_pos]);
-                    mAttendanceListView.setAdapter(mAdapter);
-                    Log.d("SUPOT69",id);
 
                 }
             }
@@ -91,9 +84,38 @@ public class AttendanceActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });*/
+        });
+
+        mDatabaseReference.child("subjects").child("teacherid").equalTo(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                final List<String> sections = new ArrayList<String>();
+
+                for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
+                    DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("sectionname");
+                    SubjectScheds subs = areaSnapshot.getValue(SubjectScheds.class);
+                    String secName = subs.getSectionname();
+                    sections.add(secName);
+                }
+
+                Spinner areaSpinner = (Spinner) findViewById(R.id.sectionSpinner2);
+                ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(AttendanceActivity.this, android.R.layout.simple_spinner_item, sections);
+                areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                areaSpinner.setAdapter(areasAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
+        mAdapter = new attendanceListAdapter(this,mDatabaseReference,"A",mContext);
+        mAttendanceListView.setAdapter(mAdapter);
+
+        saveButton = (Button) findViewById(R.id.saveAttendanceButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,51 +127,36 @@ public class AttendanceActivity extends AppCompatActivity {
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(getApplicationContext(), "Attendance Recorded!", Toast.LENGTH_SHORT).show();
-                    //CRUD to Attendance table ops here.
 
-                        saveAttendance();
+                        int no =  mAttendanceListView.getAdapter().getCount();
 
+                        for(int i = 0; i < no; i++)
+                        {
+                            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                            AttendanceList al = mAdapter.getItem(i);
+                            Date c = Calendar.getInstance().getTime();
+                            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                            String date = df.format(c);
+
+                            Attendance a = new Attendance(al.getSubjId(),al.getStudentId(),al.getName(),al.getSection(),date,"Absent");
+                            mDatabaseReference.child("attendance").push().setValue(a);
+
+                        }
+                        mAttendanceListView.setAdapter(null);
+                        Toast.makeText(getApplicationContext(), "Attendance Recorded!", Toast.LENGTH_SHORT).show();
                     }
                 });
 
                 alert.show();
             }
         });
-    }
 
-    private void saveAttendance()
-    {
-        Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        String date = df.format(c);
-
-        Attendance attendance = new Attendance("1505197", "070531", "Ronan Lina", "8-cararayan", date, "present");
-        mDatabaseReference.child("attendance").push().setValue(attendance);
     }
 
     private void getTeacherEmail(){
 
         SharedPreferences prefs = getSharedPreferences(MainActivity.ATTENDANCE_PREFS, MODE_PRIVATE);
         mEmail = prefs.getString(MainActivity.EMAIL_KEY,null);
-
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-
-
-        mAdapter = new attendanceListAdapter(this,mDatabaseReference,"A");
-        mAttendanceListView.setAdapter(mAdapter);
-
-
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
-
 
     }
 

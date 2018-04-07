@@ -93,10 +93,6 @@ public class SchedList extends AppCompatActivity {
                         }
                     });
 
-                    Log.d("SUPOT96",x);
-
-
-
                 }
             }
 
@@ -115,9 +111,7 @@ public class SchedList extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         email = getEmail();
-
-        Log.d("SUPOT%%",email+" s");
-    }
+}
 
     public String getEmail()
     {
@@ -136,24 +130,6 @@ public class SchedList extends AppCompatActivity {
     public void onStart(){
         super.onStart();
 
-        // Setting the adapter
-
-        //mAdapter = new subjSchedAdapter(this, mDatabaseReference,teacherid);
-
-
-
-        /*mSchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            // @Override
-            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-
-                SubjectScheds infoPass = mAdapter.getItem(position);
-                String sectionTitle = infoPass.sectionname;
-
-                Intent intent = new Intent(SubjectSchedules.this, activity_student_list.class);
-                intent.putExtra("SECTION_TITLE", sectionTitle);
-                startActivity(intent);
-            }
-        });*/
 
     }
 

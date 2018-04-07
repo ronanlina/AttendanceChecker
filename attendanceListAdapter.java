@@ -34,8 +34,9 @@ public class attendanceListAdapter extends BaseAdapter {
     private DatabaseReference mDatabaseReference;
     private String mSectionId;
     private String mSubjectId;
-    private ArrayList<DataSnapshot> mSnapshotList;
+    public ArrayList<DataSnapshot> mSnapshotList;
     private Query query;
+    private Context mContext;
 
     // child event listener
 
@@ -73,10 +74,10 @@ public class attendanceListAdapter extends BaseAdapter {
 
     //constructor
 
-    public attendanceListAdapter(Activity activity, DatabaseReference ref, String section){
+    public attendanceListAdapter(Activity activity, DatabaseReference ref, String section, Context context){
 
         mActivity = activity;
-
+        mContext = context;
         mDatabaseReference = ref.child("studentlist");
 
         //query = mDatabaseReference.orderByChild("section").equalTo("A");
@@ -96,7 +97,6 @@ public class attendanceListAdapter extends BaseAdapter {
         CheckBox checkLate;
         CheckBox checkExcuse;
         Button presentButton;
-        Button absentButton;
         LinearLayout.LayoutParams params;
     }
 
@@ -133,7 +133,6 @@ public class attendanceListAdapter extends BaseAdapter {
             holder.checkLate = (CheckBox) convertView.findViewById(R.id.lateCheckbox);
             holder.checkExcuse = (CheckBox) convertView.findViewById(R.id.excusedCheckbox);
             holder.presentButton = (Button) convertView.findViewById(R.id.presentButton);
-            holder.absentButton = (Button) convertView.findViewById(R.id.absentButton);
             holder.params = (LinearLayout.LayoutParams) holder.subjId.getLayoutParams();
             convertView.setTag(holder);
         }
@@ -181,36 +180,6 @@ public class attendanceListAdapter extends BaseAdapter {
                 notifyDataSetChanged();
                 //convertView = null;
                 Log.d("buttonTest","WORRRKs");
-            }
-        });
-
-        //absent
-
-        holder.absentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Date c = Calendar.getInstance().getTime();
-                SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-                String date = df.format(c);
-
-                String attendanceType;
-
-                if(holder.checkExcuse.isChecked()){
-                    attendanceType = "Excused";
-                    holder.checkLate.setEnabled(false);
-                }
-                else {
-                    attendanceType = "Absent";
-                    holder.checkLate.setEnabled(true);
-                }
-
-                Attendance attendance = new Attendance(subjid, studentid, studName, section, date, attendanceType);
-                mDatabaseReference.child("attendance").push().setValue(attendance);
-
-                mSnapshotList.remove(position);
-                notifyDataSetChanged();
-
             }
         });
 
