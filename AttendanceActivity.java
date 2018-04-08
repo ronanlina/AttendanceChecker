@@ -100,7 +100,7 @@ public class AttendanceActivity extends AppCompatActivity {
                 }
 
                 Spinner areaSpinner = (Spinner) findViewById(R.id.sectionSpinner2);
-                ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(AttendanceActivity.this, android.R.layout.simple_spinner_item, sections);
+                ArrayAdapter<String> areasAdapter = new ArrayAdapter<>(AttendanceActivity.this, android.R.layout.simple_spinner_item, sections);
                 areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 areaSpinner.setAdapter(areasAdapter);
             }

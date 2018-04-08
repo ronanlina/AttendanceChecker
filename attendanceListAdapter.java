@@ -80,9 +80,9 @@ public class attendanceListAdapter extends BaseAdapter {
         mContext = context;
         mDatabaseReference = ref.child("studentlist");
 
-        //query = mDatabaseReference.orderByChild("section").equalTo("A");
+        query = mDatabaseReference.orderByChild("section").equalTo("A");
 
-        mDatabaseReference.addChildEventListener(mListener);
+        query.addChildEventListener(mListener);
 
         mSnapshotList = new ArrayList<>();
     }
